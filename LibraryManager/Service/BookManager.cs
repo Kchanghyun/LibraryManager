@@ -1,8 +1,8 @@
-﻿using System.Collections.Immutable;
-using LibraryManager.Interfaces;
+﻿using LibraryManager.Interfaces;
 using LibraryManager.Model;
 
-namespace LibraryManager.Service {
+namespace LibraryManager.Service
+{
     public class BookManager : IBookManager {
         private List<Book?> _books = new();
         private int _nextId = 1;
@@ -19,12 +19,59 @@ namespace LibraryManager.Service {
             if(book != null) _books.Remove(book);
         }
 
+        //FirstOrDefault => umm.. b.Id가 bookId와 같다면 그 Id의 인덱스 반환하는듯..?
         public Book FindBookById(int bookId) {
             return _books.FirstOrDefault(b => b.Id == bookId);
         }
 
+        // FindBookByTitle 기능 추가
+        public Book FindBookByTitle(string bookTitle) {
+            return _books.FirstOrDefault(b => b.Title == bookTitle);
+        }
+
+        // FindBookByAuthor 기능 추가
+        public Book FindBookByAuthor(string bookAuthor) {
+            return _books.FirstOrDefault(b => b.Author == bookAuthor);
+        }
+
+        // 오버로딩을 하는 게 더 나으려나?
+        //public Book FindBook(int bookId) {
+        //    return _books.FirstOrDefault(b => b.Id == bookId);
+        //}
+
+        //public Book FindBook(string bookTitle)
+        //{
+        //    return _books.FirstOrDefault(b => b.Title == bookTitle);
+        //}
+
+        // tmp는 Title 메서드와 겹쳐서 의미 없는 변수로 만듦..
+        //public Book FindBook(int tmp, string bookAuthor)
+        //{
+        //    return _books.FirstOrDefault(b => b.Author == bookAuthor);
+        //}
+
         public List<Book> GetAllBooks() {
             return _books;
+        }
+
+        // 리뷰 추가 및 리뷰 찾기 기능
+        public void AddReview(int bookId) {
+            Book book = _books.FirstOrDefault(b => b.Id == bookId);
+            if(book != null) {
+                Console.WriteLine("이 책의 리뷰를 남겨주세요");
+                book.Review.Review = Console.ReadLine();
+                Console.WriteLine("리뷰 추가 완료");
+            }
+        }
+
+        public void FindReview(int bookId) {
+            Book book = _books.FirstOrDefault(b => b.Id == bookId);
+            if(book != null) {
+                //찾았는데 review가 없으면 리뷰 추가하기
+                if(string.IsNullOrEmpty(book.Review.Review)) AddReview(bookId);
+
+                Console.WriteLine($"ID : {book.Id}, 제목 : {book.Title}, 저자 : {book.Author}, 리뷰 : {book.Review.Review}");
+            }
         }
     }
 }

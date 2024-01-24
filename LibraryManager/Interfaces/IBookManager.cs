@@ -5,6 +5,5 @@ namespace LibraryManager.Interfaces {
         public void AddBook(Book book);
         public void RemoveBook(int bookId);
         public Book FindBookById(int bookId);
-        //test
     }
 }
