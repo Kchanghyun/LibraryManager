@@ -1,4 +1,5 @@
-﻿using LibraryManager.Interfaces;
+﻿using System.Text;
+using LibraryManager.Interfaces;
 using LibraryManager.Model;
 
 namespace LibraryManager.Service
@@ -57,9 +58,12 @@ namespace LibraryManager.Service
         // 리뷰 추가 및 리뷰 찾기 기능
         public void AddReview(int bookId) {
             Book book = _books.FirstOrDefault(b => b.Id == bookId);
+
             if(book != null) {
                 Console.WriteLine("이 책의 리뷰를 남겨주세요");
-                book.Review.Review = Console.ReadLine();
+                string? tmp = Console.ReadLine();
+
+                book.AddReview(new Review { UserReview = tmp });
                 Console.WriteLine("리뷰 추가 완료");
             }
         }
@@ -68,9 +72,14 @@ namespace LibraryManager.Service
             Book book = _books.FirstOrDefault(b => b.Id == bookId);
             if(book != null) {
                 //찾았는데 review가 없으면 리뷰 추가하기
-                if(string.IsNullOrEmpty(book.Review.Review)) AddReview(bookId);
+                if(book.Reviews.Count == 0) AddReview(bookId);
 
-                Console.WriteLine($"ID : {book.Id}, 제목 : {book.Title}, 저자 : {book.Author}, 리뷰 : {book.Review.Review}");
+                StringBuilder sb = new StringBuilder();
+                foreach(var bookReview in book.Reviews) {
+                    sb.AppendLine(bookReview.UserReview);
+                }
+
+                Console.WriteLine($"ID : {book.Id}, 제목 : {book.Title}, 저자 : {book.Author} \n리뷰 : {sb}");
             }
         }
     }

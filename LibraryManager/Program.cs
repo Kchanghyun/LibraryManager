@@ -1,7 +1,10 @@
-﻿using LibraryManager.Model;
+﻿using System.Net;
+using System.Text;
+using LibraryManager.Model;
 using LibraryManager.Service;
 
 BookManager bookManager = new();
+LoanManager loanManager = new();
 
 // OCP 예문에서 if else로 늘리는것처럼 이것도 늘리는건가..? 아니면 그냥 보기니까 괜찮은건가..?
 while(true) {
@@ -9,9 +12,15 @@ while(true) {
     Console.WriteLine("2. 책 삭제");
     Console.WriteLine("3. 책 검색");
     Console.WriteLine("4. 모든 책 보기");
+
     Console.WriteLine("5. 리뷰 추가");
     Console.WriteLine("6. 리뷰 보기");
-    Console.WriteLine("7. 종료");
+
+    Console.WriteLine("7. 대여하기");
+    Console.WriteLine("8. 반납하기");
+    Console.WriteLine("9. 서점 대여 리스트");
+
+    Console.WriteLine("10. 종료");
 
     Console.Write("옵션을 선택하세요: ");
 
@@ -37,6 +46,15 @@ while(true) {
             FindReview();
             break;
         case 7:
+            LoanBook();
+            break;
+        case 8:
+            ReturnBook();
+            break;
+        case 9:
+            ListOfLoanBooks();
+            break;
+        case 10:
             return;
         default:
             Console.WriteLine("잘못된 선택입니다.");
@@ -114,11 +132,21 @@ void DisplayAllBooks() {
     var books = bookManager.GetAllBooks();
 
     foreach(var book in books) {
-        // 리뷰 없는 경우 리뷰 없음으로 바꾸기
-        if(string.IsNullOrEmpty(book.Review.Review)) book.Review.Review = "리뷰 없음";
-        Console.WriteLine($"ID: {book.Id}, 제목: {book.Title}, 저자: {book.Author} 리뷰: {book.Review.Review}");
+        string review = SumReviews(book.Reviews);
+        Console.WriteLine($"ID: {book.Id}, 제목: {book.Title}, 저자: {book.Author} 리뷰: {review}");
     }
 }
+string SumReviews(List<Review> reviews) {
+    if(reviews.Count == 0) return "리뷰 없음";
+
+    StringBuilder sb = new StringBuilder();
+    foreach(Review review in reviews) {
+        sb.AppendLine(review.UserReview);
+    }
+
+    return sb.ToString();
+}
+
 
 // 리뷰 추가 및 리뷰 찾기
 void AddReview() {
@@ -131,4 +159,37 @@ void FindReview() {
     Console.Write("책 ID: ");
     int id = Convert.ToInt32(Console.ReadLine());
     bookManager.FindReview(id);
+}
+
+void LoanBook() {
+    Console.Write("대여할 책 번호 입력 : ");
+    int bookId = Convert.ToInt32(Console.ReadLine());
+
+    Console.Write("사용자 번호 입력 : ");
+    int userId = Convert.ToInt32(Console.ReadLine());
+
+    loanManager.LoanBook(bookId, userId);
+}
+
+void ReturnBook() {
+    Console.Write("반납할 책 번호 입력 : ");
+    int bookId = Convert.ToInt32(Console.ReadLine());
+
+    Console.Write("사용자 번호 입력 : ");
+    int userId = Convert.ToInt32(Console.ReadLine());
+
+    loanManager.ReturnBook(bookId, userId);
+}
+
+void ListOfLoanBooks() {
+    List<LoanRecord> _loanRecords = loanManager.LoanList();
+    foreach(var loanRecord in _loanRecords) {
+        Console.WriteLine("--------------------------");
+        Console.WriteLine($"ID : {loanRecord.Id}");
+        Console.WriteLine($"사용자 번호 : {loanRecord.UserId}");
+        Console.WriteLine($"책 번호 : {loanRecord.BookId}");
+        Console.WriteLine($"대출 시간 : {loanRecord.LoanDate}");
+        Console.WriteLine($"반납 시간 : {loanRecord.ReturnDate}");
+        Console.WriteLine("--------------------------");
+    }
 }
