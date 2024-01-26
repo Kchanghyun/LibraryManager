@@ -4,7 +4,7 @@ using LibraryManager.Model;
 
 namespace LibraryManager.Service
 {
-    public class BookManager : IBookManager {
+    public class BookManager : IBookCRUD, IBookSearch {
         private List<Book?> _books = new();
         private int _nextId = 1;
 
@@ -26,13 +26,13 @@ namespace LibraryManager.Service
         }
 
         // FindBookByTitle 기능 추가
-        public Book FindBookByTitle(string bookTitle) {
-            return _books.FirstOrDefault(b => b.Title == bookTitle);
+        public List<Book> FindBookByTitle(string bookTitle) {
+            return _books.FindAll(b => b.Title.ToLower().Contains(bookTitle.ToLower()));
         }
 
         // FindBookByAuthor 기능 추가
-        public Book FindBookByAuthor(string bookAuthor) {
-            return _books.FirstOrDefault(b => b.Author == bookAuthor);
+        public List<Book> FindBookByAuthor(string bookAuthor) {
+            return _books.FindAll(b => b.Author.ToLower().Contains(bookAuthor.ToLower()));
         }
 
         // 오버로딩을 하는 게 더 나으려나?

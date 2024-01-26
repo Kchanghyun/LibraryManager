@@ -5,8 +5,8 @@ using LibraryManager.Model;
 
 namespace LibraryManager.Service
 {
-    public class LoanManager {
-        public List<LoanRecord> _LoanRecords = new();
+    public class LoanManager : ILoanManager {
+        private List<LoanRecord> _LoanRecords = new();
         private int _nextId = 1;
 
         public void LoanBook(int bookId, int userId) {

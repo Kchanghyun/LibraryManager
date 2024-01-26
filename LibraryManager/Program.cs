@@ -101,32 +101,40 @@ void FindBook() {
     Console.WriteLine("3. 저자");
 
     int select = Convert.ToInt32(Console.ReadLine());
-    Book book;
 
     switch(select) {
         case 1:
             Console.Write("ID : ");
             int id = Convert.ToInt32(Console.ReadLine());
-            book = bookManager.FindBookById(id);
+            Book bookById = bookManager.FindBookById(id);
+
+            if(bookById != null) {
+                Console.WriteLine($"ID: {bookById.Id}, 제목: {bookById.Title}, 저자: {bookById.Author}");
+            } else 
+                Console.WriteLine("책을 찾을 수 없습니다.");
             break;
         case 2:
             Console.Write("제목 : ");
             string title = Console.ReadLine();
-            book = bookManager.FindBookByTitle(title);
+            List<Book> bookByTitle = bookManager.FindBookByTitle(title);
+            PrintListOfBook(bookByTitle);
             break;
         case 3:
             Console.Write("저자 : ");
             string author = Console.ReadLine();
-            book = bookManager.FindBookByAuthor(author);
+            List<Book> bookByAuthor = bookManager.FindBookByAuthor(author);
+            PrintListOfBook(bookByAuthor);
             break;
         default:
-            // 다른 값 입력 시 그냥 첫번째 Id의 책 가지고 오기
-            book = bookManager.FindBookById(1);
+            Console.WriteLine("없는 번호입니다.");
             break;
     }
-    Console.WriteLine($"ID: {book.Id}, 제목: {book.Title}, 저자: {book.Author}");
 }
-
+void PrintListOfBook(List<Book> books) {
+    foreach(var book in books) {
+        Console.WriteLine($"ID : {book.Id}, 제목 : {book.Title}, 저자 : {book.Author}");
+    }
+}
 // 원래 있던 기능에 리뷰 없음 문자열 추가.. 이것도 OCP 위반,,?
 void DisplayAllBooks() {
     var books = bookManager.GetAllBooks();
